@@ -1,0 +1,22 @@
+name: parametersBooleanRecursivePromotions
+on:
+  workflow_dispatch:
+jobs:
+  promote:
+    if:
+#       # Unsupported condition(s) [expression]
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # This action relies on the workflow '${currentBuild.getProjectName()}.yml' being present in this repository (change the repository parameter if the workflow is in a different repository).
+#     # Ensure that the workflow exists, has the workflow_dispatch trigger, and has matching input parameters.
+#     - name: Trigger workflow
+#       uses: octokit/request-action@v2.1.9
+#       env:
+#         GITHUB_TOKEN: "${{ secrets.WORKFLOW_TRIGGER_TOKEN }}"
+#       with:
+#         route: POST /repos/:repository/actions/workflows/:workflow_id/dispatches
+#         repository: "${{ github.repository }}"
+#         workflow_id: "${currentBuild.getProjectName()}.yml"
+#         ref: "${{ github.ref }}"
