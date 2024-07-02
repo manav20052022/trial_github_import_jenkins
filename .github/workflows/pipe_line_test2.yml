@@ -1,0 +1,35 @@
+name: pipe_line_test2
+on:
+  workflow_dispatch:
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: sh
+      shell: bash
+      run: npm install
+    - name: sh
+      shell: bash
+      run: npm run build
+  Test_Unit_Tests:
+    name: Test-Unit Tests
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: sh
+      shell: bash
+      run: npm test
+  Test_Integration_Tests:
+    name: Test-Integration Tests
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: sh
+      shell: bash
+      run: npm run test:integration
