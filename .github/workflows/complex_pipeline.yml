@@ -1,0 +1,180 @@
+name: complex_pipeline
+on:
+  workflow_dispatch:
+env:
+  APP_NAME: myApp
+  DOCKER_CREDENTIALS_ID: docker-credentials
+jobs:
+  Checkout:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: checkout scm
+  Build:
+    runs-on: ubuntu-latest
+    needs: Checkout
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             echo 'Building the application...'
+#                                 sh './gradlew build'
+  Test_Unit_Tests:
+    name: Test-Unit Tests
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             echo 'Running unit tests...'
+#                                         sh './gradlew test'
+  Test_Integration_Tests:
+    name: Test-Integration Tests
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             echo 'Running integration tests...'
+#                                         sh './gradlew integrationTest'
+  Test_Static_Code_Analysis:
+    name: Test-Static Code Analysis
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             echo 'Running static code analysis...'
+#                                         sh './gradlew check'
+  Build_Docker_Image:
+    name: Build Docker Image
+    runs-on: ubuntu-latest
+    needs:
+    - Test_Unit_Tests
+    - Test_Integration_Tests
+    - Test_Static_Code_Analysis
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             echo 'Building Docker image...'
+#                                 sh "docker build -t ${{ env.APP_NAME }}:${{ env.BUILD_NUMBER }} ."
+  Push_Docker_Image:
+    name: Push Docker Image
+    runs-on: ubuntu-latest
+    needs: Build_Docker_Image
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             echo 'Pushing Docker image to registry...'
+#                                 withCredentials([usernamePassword(credentialsId: "${{ env.DOCKER_CREDENTIALS_ID }}", passwordVariable: 'DOCKER_PASSWORD', usernameVariable: 'DOCKER_USERNAME')]) {
+#                                     sh "echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin"
+#                                     sh "docker push ${{ env.APP_NAME }}:${{ env.BUILD_NUMBER }}"
+#                                 }
+  Deploy:
+    runs-on: ubuntu-latest
+    needs: Push_Docker_Image
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             echo 'Deploying the application...'
+#                                 sh './deploy.sh'
+  Post-Build:
+    if: always()
+    name: Post Build
+    runs-on: ubuntu-latest
+    needs:
+    - Checkout
+    - Build
+    - Test_Unit_Tests
+    - Test_Integration_Tests
+    - Test_Static_Code_Analysis
+    - Build_Docker_Image
+    - Push_Docker_Image
+    - Deploy
+    steps:
+    - name: snapshot post build workflow status
+      run: |-
+        echo "success=${{ contains(needs.*.result,'success') && !contains(needs.*.result,'cancelled') && !contains(needs.*.result,'failure') }}" >> $GITHUB_OUTPUT
+        echo "failure=${{ contains(needs.*.result,'failure') && !contains(needs.*.result,'cancelled') }}" >> $GITHUB_OUTPUT
+      id: post_build
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: echo 'Pipeline failed!'
+#       if: steps.post_build.outputs.failure == 'true'
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: echo 'Pipeline completed successfully!'
+#       if: steps.post_build.outputs.success == 'true'
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             echo 'Cleaning up workspace...'
+#                             cleanWs()
+#       if: always()
