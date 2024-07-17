@@ -1,0 +1,38 @@
+name: artifactory_job
+on:
+  workflow_dispatch:
+env:
+  ARTIFACTORY_URL: http://your-artifactory-server/artifactory
+  ARTIFACTORY_CREDENTIALS: your-credentials-id
+  REPO: your-repo
+jobs:
+  Build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: sh
+      shell: bash
+      run: mvn clean install
+  Publish_to_Artifactory:
+    name: Publish to Artifactory
+    runs-on: ubuntu-latest
+    needs: Build
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+#     # 'script' was not transformed because there is no suitable equivalent in GitHub Actions
+#     - name: script
+#       arguments:
+#       - key: scriptBlock
+#         value:
+#           isLiteral: true
+#           value: |-
+#             def server = Artifactory.server(ARTIFACTORY_URL, ARTIFACTORY_CREDENTIALS)
+#                                 def uploadSpec = """{
+#                                     "files": [{
+#                                         "pattern": "target/*.jar",
+#                                         "target": "${{ env.REPO }}/"
+#                                     }]
+#                                 }"""
+#                                 server.upload(uploadSpec)
