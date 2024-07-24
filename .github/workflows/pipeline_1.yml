@@ -1,0 +1,14 @@
+name: Pipeline_1
+on:
+  workflow_dispatch:
+jobs:
+  Main:
+    runs-on: ubuntu-latest
+    container:
+      image: ubuntu
+    steps:
+    - name: checkout
+      uses: actions/checkout@v4.1.0
+    - name: sh
+      shell: bash
+      run: hostname
